@@ -1,7 +1,7 @@
 # Analysis of Expected Goals (xG) as a metric in football.
 Data Science Capstone project exploring the xG metric in football.
 
-#Authors:
+# Authors:
 Senyo Ohene
 
 # Abstract
@@ -44,10 +44,10 @@ I separate my data into nominal (features with Boolean or descriptive values) an
 
 ## Models
 Finally, the following models are trained on the features, using the shot outcome as a target attribute:
-The project constructs an expected goals model comparable to the benchmark (Statsbomb), using five different classifiers. Default implementations of Logistic Regression, SGDClassifier, GradientBoostingClassifier, RandomForestClassifier, and DecisionTreeClassifier from sklearn are used.
+The project constructs an expected goals model comparable to the benchmark (Statsbomb), using five different classifiers. Default implementations of Logistic Regression, SGDClassifier, GradientBoostingClassifier, RandomForestClassifier, and DecisionTreeClassifier from sklearn (https://scikit-learn.org) are used.
 
 Statsbomb's own xG values are used as a benchmark to compare our models to.
-I plot all the shots displaying their statsbomb xg and their proposed model xg for five different classifiers output using the function predict_proba, which is a function of each classifier which provides the probability that a shot resulted in a goal.
+I plot all the shots displaying their statsbomb xg and their proposed model xg for five different classifiers output using the function predict_proba(), which is a function of each classifier which provides the probability that a shot resulted in a goal.
 
 
 ## Model selection
@@ -61,31 +61,31 @@ The $R^2$ values and gradients for each model in each league are displayed below
 Premier League:
 |Metric|Logistic Regression |SGDClassifier| Random Forest Classifier | Gradient Boosting Classifier| Decision Tree Classifier | 
 |---|---|---|---|---|---|
-|$R^2|0.304|0.334|0.530|0.579|0.170|
+|$R^2$|0.304|0.334|0.530|0.579|0.170|
 |Gradient|0.98|0.74|0.69|0.89|0.18|
 
 La Liga
 |Metric|Logistic Regression |SGDClassifier| Random Forest Classifier | Gradient Boosting Classifier| Decision Tree Classifier | 
 |---|---|---|---|---|---|
-|$R^2|0.310|-0.181|0.537|0.654|0.187|
-|Gradient|1.03|1.115|0.72|0.91|0.21|
+|$R^2$|0.310|-0.181|0.537|0.654|0.187|
+|Gradient|1.03|1.15|0.72|0.91|0.21|
 
 Serie A
 |Metric|Logistic Regression |SGDClassifier| Random Forest Classifier | Gradient Boosting Classifier| Decision Tree Classifier | 
 |---|---|---|---|---|---|
-|$R^2|0.356|0.434|0.588|0.680|0.203|
+|$R^2$|0.356|0.434|0.588|0.680|0.203|
 |Gradient|1.04|0.72|0.74|0.89|0.23|
 
 Bundesliga
 |Metric|Logistic Regression |SGDClassifier| Random Forest Classifier | Gradient Boosting Classifier| Decision Tree Classifier | 
 |---|---|---|---|---|---|
-|$R^2|0.385|0.345|0.542|0.617|0.162|
+|$R^2$|0.385|0.345|0.542|0.617|0.162|
 |Gradient|0.97|0.87|0.74|0.83|0.21|
 
 Ligue 1
 |Metric|Logistic Regression |SGDClassifier| Random Forest Classifier | Gradient Boosting Classifier| Decision Tree Classifier | 
 |---|---|---|---|---|---|
-|$R^2|0.196|0.481|0.453|0.485|0.093|
+|$R^2$|0.196|0.481|0.453|0.485|0.093|
 |Gradient|1.10|0.79|0.69|0.92|0.14|
 
 It is important to note that this project strikes a curious chord between classification and regression. It would not be appropriate to see this as a purely regressional task, because then we would only be measuring our proposed model's ability to mimic the results of Statsbomb's xG model. That said, we do note that Statsbomb's xG model is a good benchmark.
@@ -97,19 +97,29 @@ Based on these characteristics, the Gradient Boosting classifier was chosen, for
 The project also includes a function to display the cumulative xG chart of any match. This is done using code heavily adapted from McKay Johns [6].
 
 An example of this chart is shown below:
+![Cumulative xG chart for Rayo Vallecano v Real Madrid](images/cumulative_xg_rayo_real.png)
 
 # Evaluation
 
 ## Permutation Feature Importance
 The permutation feature importance of a feature in a model is a measure of how different the output of the model is if the feature in question is randomly permuted and all other features remain the same. If outputs remain relatively unchanged despite permutation, then the feature is not particularly crucial in determining the output of the model. On the other hand, if the outputs differ significantly when a feature is permuted, then the feature is very important in determining the output.
 This seeks to determine which of the features are most important when it comes to assessing the probability of a goal being scored.
-Here are the graphs I obtained for all five leagues:
 
-Perhaps, unsurprisingly the distance is the most important, across the board. This means that shots taken closer to the goal are more likely to score than those taken from further away.
+Here are the graphs I obtained for all five leagues:
+![Premier League](images/premier_league_feature_importance.png)
+![La Liga](images/la_liga_feature_importance.png)
+![Serie A](images/serie_a_feature_importance.png)
+![Bundesliga](images/bundesliga_feature_importance.png)
+![Ligue 1](images/ligue_1_feature_importance.png)
+
+Perhaps unsurprisingly, the distance is the most important feature, across the board. This means that shots taken closer to the goal are more likely to score than those taken from further away.
+
 In all cases, the second most important feature was the shot type, although in all cases, this feature's importance was significantly lower than the importance of distance.
 
 ## Performance of best model on test set
 I tested my model on the test set and obtained the following results:
+
+
 
 # Discussion
 The main takeaway from the project is that of the basic features of a shot, distance is by far the greatest indicator of goal expectation. This means that teams should prioritize patterns of play that enable them to take shots as close to goal as possible.
