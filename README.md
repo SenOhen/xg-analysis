@@ -5,19 +5,22 @@ Data Science Capstone project exploring the xG metric in football.
 Senyo Ohene
 
 # Abstract
-This project proposes a machine-learning-based method of determining the expected goals metric, which is the expectation from 0 to 1 that a goal will be scored from a particular shot. I examine full seasons from five different country football leagues and train five basic machine learning models to output probabilities that a shot will score based on its characteristics. I find that a model of performance comparable to industry benchmarks can be built based on the distance, angle, shot type and other features of a shot. Furthermore, I find that distance of a shot is the most important feature in determining the expectation of a goal.
+This project proposes a machine-learning-based method of determining the expected goals (xG) metric, which is the expectation from 0 to 1 that a goal will be scored from a particular shot. I examine full seasons from five different country football leagues and train five basic machine learning models to output probabilities that a shot will score based on some of the shot's characteristics. I find that a model of performance comparable to industry benchmarks can be built based on the distance, angle, shot type and other features of a shot. Furthermore, I find that distance of a shot is the most important feature in determining the expectation of a goal.
 
 # Introduction
 Football is a game of goals, in which individual moments matter disproportionately as compared with other sports. At the most recent FIFA World Cup in 2022, there were 172 goals scored in 64 matches, giving an average of 2.69 goals per match. Since goals occur so infrequently, an individual goal is worth more than in other sports, and there is incentive for football teams and players to invest in creating chances that maximize their goal scoring expectations.
 
-Hewitt et al. use machine learning to build an expected goals model that adjusts for players and player positions in [1]. Rathke proposes a simple method based on simple ratios of goals scored to shots taken for different sections of the football field in [2]. Brechot et al. propose that examining teams' performance using expected goals is better than using the number of points they have at a particular point in the season in [3]. Lastly, Spearman uses spatiotemporal data to quantify the probability of a player scoring at any point during a match in [4].
-Fans of football who have watched the sport for any period of time intuitively have some idea of how likely it is that a shot will result in a goal; for example, it reasonable to have a higher expectation that a goal will result from a shot from 2 meters away from an empty goal than from a shot taken from the center circle of the field toward a goal where the keeper is waiting in the middle of the goal. However, quantifying this expectation, or the expectation that such a shot will result in a goal, requires a more comprehensive and more involving process.
+Hewitt et al. use machine learning to build an expected goals model that adjusts for particular players and player positions in [1]. Rathke proposes a simple method based on simple ratios of goals scored to shots taken for different sections of the football field in [2]. Brechot et al. propose that examining teams' performance using expected goals is better than using the number of points they have at a particular point in the season in [3]. Lastly, Spearman uses spatiotemporal data to quantify the probability of a player scoring at any point during a match in [4].
+
+Fans of football who have watched the sport for any period of time intuitively have some idea of how likely it is that a shot will result in a goal; for example, it reasonable to have a higher expectation that a goal will result from a shot taken 2 meters away from an empty goal than from a shot taken from the center circle of the field toward a goal where the keeper is waiting in the middle of the goal. However, quantifying this expectation, or the expectation that such a shot will result in a goal, requires a more comprehensive and more involving process.
+
 Current industry leaders in the sport analytics world have expected goals models that vary slightly from each other in value, which implies that they use different algorithms to generate their expectations.
+
 The goal of this project, then, is to use machine learning to develop a simple model that gives the expectation that a goal will be scored from a shot, whose usefulness is comparable to industry benchmarks, and also get an idea of which factors contribute the most to high quality chances.
 
 # Methods
 ## Data
-This project uses data from the 2015/16 seasons of the Premier League, La Liga, Bundesliga, Ligue 1 and Serie A soccer leagues obtained from Statsbomb (https://github.com/statsbomb) [5]. For each league, all shots taken in the first 75% of matchweeks of the league were added to a dataframe with the following attributes
+This project uses data from the 2015/16 seasons of the Premier League, La Liga, Bundesliga, Ligue 1 and Serie A soccer leagues obtained from Statsbomb (https://github.com/statsbomb) [5], which serves as my benchmark. For each league, all shots taken in the first 75% of matchweeks of the league were added to a dataframe with the following attributes
 - location (where the shot was taken)
 - shot type (whether the shot was from open play, or a penalty, corner kick or free kick)
 - shot technique (whether the shot was kicked facing the goal, over the head, with the back of the heel, lobbed over the keeper, etc.)
@@ -25,35 +28,37 @@ This project uses data from the 2015/16 seasons of the Premier League, La Liga, 
 - under pressure (whether the shot was taken under pressure from an opponent or not)
 - minute (what minute the shot was taken)
 - player position (the position of the player taking the shot i.e. defender, midfielder, striker etc.)
-- shot first time (whether the shot was taken at once by the player, or the player took prior touches)
+- shot first time (whether the shot was taken at once by the player, or the player had possession prior to shooting)
 
 This resulted in a separate dataframe for each league, each with at least 5,500 shots.
 
-The shot outcome (whether a goal was scored from the shot or not) was also added to the dataframe to eventually be used as a target attribute to train the models. 
+The shot outcome (whether a goal was scored from the shot or not) was also added to each dataframe to eventually be used as a target attribute to train the models. 
 
-It is important to note that more data feature could theoretically be added, but only subject to availability. Some features that were not added (due to difficulty of access), were goalkeeper position, stronger foot of the player, number of defenders between the ball and the goal at the moment the ball was struck, among others.
+It is important to note that more data features could theoretically be added, but only subject to availability. Some features that were not added (due to difficulty of access), were goalkeeper position, stronger foot of the player and number of defenders between the ball and the goal at the moment the ball was struck, among others.
 
-The following features are calculated using the location of the shot and added to the dataframe:
+The following features are calculated using the location of the shot and added to the dataframes:
 - distance (the distance from the shot location to the center of the goal)
 - angle (the angle between the line from the shot location to the center of the goal and the line perpendicular to the goal line passing through the center of the goal)
 
-I apply some preprocessing steps, such as transforming the shot outcome to a binary attribute. I am only interested in whether a shot resulted in a goal or not. My model takes no note of whether a shot that did not result in a goal missed the target, was saved, was blocked, hit the crossbar, just that it did not score.
+I apply some preprocessing steps, such as transforming the shot outcome to a binary attribute. I am only interested in whether a shot resulted in a goal or not. My model takes no note of whether a shot that did not result in a goal missed the target, was saved, was blocked, or hit the crossbar, just that it did not score.
 I remove any shots from corner kicks, since their rarity makes them a problem for the models.
 I convert boolean features from having values of True and nan (not a number) to True and False.
 I separate my data into nominal (features with Boolean or descriptive values) and numerical features. Nominal features are imputed, one-hot encoded and scaled. Numerical features are imputed and scaled. 
 
+To get a sense of the performance of teams in comparison to Statsbomb's expected goals metric, I plot a chart of the goals scored compared to the expected goals (according to Statsbomb) of the five highest teams in each league. For example, below is the graph of the highest scorers in Ligue 1:
+![Ligue 1 Highest scoring teams](images/top_5_scoring_ligue_1.png)
+
 ## Models
 Finally, the following models are trained on the features, using the shot outcome as a target attribute:
-The project constructs an expected goals model comparable to the benchmark (Statsbomb), using five different classifiers. Default implementations of Logistic Regression, SGDClassifier, GradientBoostingClassifier, RandomForestClassifier, and DecisionTreeClassifier from sklearn (https://scikit-learn.org) are used.
+The project constructs an expected goals model comparable to the benchmark (Statsbomb's) expected goals, using five different classifiers. Default implementations of Logistic Regression, SGDClassifier, GradientBoostingClassifier, RandomForestClassifier, and DecisionTreeClassifier from sklearn (https://scikit-learn.org) are used.
 
-Statsbomb's own xG values are used as a benchmark to compare our models to.
 I plot all the shots displaying their statsbomb xg and their proposed model xg for five different classifiers output using the function predict_proba(), which is a function of each classifier which provides the probability that a shot resulted in a goal.
 
 
 ## Model selection
 The shots were used to train five classifiers, and the results were displayed to show their correlation with the Statsbomb xG. The model selection was based on the following characteristics:
 
-- Range of values: it has a wide enough range of values to be realistic. The sample size of shots means that there should be a reasonable spread of goal expectation values.
+- Range of values: it has a wide enough range of values to be realistic. The sample size of shots means that there should be a reasonable spread of goal expectation values. This is measured based on an eye test, with the reasoning that with a sufficiently high set of shots, there should be a wide spread of goal expectations.
 - Correlation with the industry benchmark. While the hope is to compare performance with the benchmark, and possibly improve it, it is unlikely that our proposed model's performance will be a vast improvement on the benchmark. I measured correlation using $R^2$ and also took into account the gradient of the trendline of the graph.
 
 The $R^2$ values and gradients for each model in each league are displayed below:
@@ -88,9 +93,8 @@ Ligue 1
 |$R^2$|0.196|0.481|0.453|0.485|0.093|
 |Gradient|1.10|0.79|0.69|0.92|0.14|
 
-It is important to note that this project strikes a curious chord between classification and regression. It would not be appropriate to see this as a purely regressional task, because then we would only be measuring our proposed model's ability to mimic the results of Statsbomb's xG model. That said, we do note that Statsbomb's xG model is a good benchmark.
-At the same time, this is not a purely classificational task either: we do not aim to predict whether a particular shot results in a goal or not.
-Instead, we are interested in the probabilities.
+It is important to note that this project has some aspects of both classification and regression. It would not be appropriate to see this as a purely regressional task, because then we would only be measuring our proposed model's ability to mimic the results of Statsbomb's xG model, although we do consider Statsbomb's xG model to be a good benchmark.
+At the same time, this is not a purely classificational task either: we do not aim solely to predict whether a particular shot results in a goal or not; instead, we are interested in the expectation that shots with certain features will result in goals.
 
 Based on these characteristics, the Gradient Boosting classifier was chosen, for all 5 leagues. In all cases, the Gradient Boosting Classifier had the highest $R^2$ value with the statsbomb xG value, as well as the closest gradient to 1.
 
@@ -102,24 +106,48 @@ An example of this chart is shown below:
 # Evaluation
 
 ## Permutation Feature Importance
-The permutation feature importance of a feature in a model is a measure of how different the output of the model is if the feature in question is randomly permuted and all other features remain the same. If outputs remain relatively unchanged despite permutation, then the feature is not particularly crucial in determining the output of the model. On the other hand, if the outputs differ significantly when a feature is permuted, then the feature is very important in determining the output.
-This seeks to determine which of the features are most important when it comes to assessing the probability of a goal being scored.
+The permutation feature importance of a feature in a model is a measure of how different the output of the model is if the feature in question is randomly permuted and all other features remain the same. If outputs remain relatively unchanged despite permutation, then the feature is not particularly crucial in determining the output of the model. On the other hand, if the outputs differ significantly when a feature is permuted, then the feature is very important in determining the output. Therefore the permutation importance is useful in determining which of the features are most important when it comes to assessing the expectation of a goal being scored from a shot.
 
 Here are the graphs I obtained for all five leagues:
-![Premier League](images/premier_league_feature_importance.png)
-![La Liga](images/la_liga_feature_importance.png)
-![Serie A](images/serie_a_feature_importance.png)
-![Bundesliga](images/bundesliga_feature_importance.png)
-![Ligue 1](images/ligue_1_feature_importance.png)
+![Premier League](images/feature_importance_premier_league.png)
+![La Liga](images/feature_importance_la_liga.png)
+![Serie A](images/feature_importance_serie_a.png)
+![Bundesliga](images/feature_importance_bundesliga.png)
+![Ligue 1](images/feature_importance_ligue_1.png)
 
 Perhaps unsurprisingly, the distance is the most important feature, across the board. This means that shots taken closer to the goal are more likely to score than those taken from further away.
 
-In all cases, the second most important feature was the shot type, although in all cases, this feature's importance was significantly lower than the importance of distance.
+In all cases, the second most important feature was the shot type (from open play, free kick etc.), although in all cases, the importance of shot type was significantly lower than the importance of distance. All other features' importances were in the range of 0.000 to about 0.005. I initially expected position to have more importance, with strikers having a higher expectation of scoring than defenders. However, it is possible that the number of shots that strikers get, which is higher across all leagues that other positions means that the expectations even out.
 
 ## Performance of best model on test set
 I tested my model on the test set and obtained the following results:
+![Premier League](images/test_comparison_premier_league.png)
+|shots|goals|statsbomb xG|proposed model xG|
+|---|---|---|---|
+|1447|141|141.05|136.79|
+
+![La Liga](images/test_comparison_la_liga.png)
+|shots|goals|statsbomb xG|proposed model xG|
+|---|---|---|---|
+|1360|149|148.53|153.37|
+
+![Serie A](images/test_comparison_serie_a.png)
+|shots|goals|statsbomb xG|proposed model xG|
+|---|---|---|---|
+|1470|138|130.79|135.88|
+
+![Bundesliga](images/test_comparison_bundesliga.png)
+|shots|goals|statsbomb xG|proposed model xG|
+|---|---|---|---|
+|1165|121|126.49|134.57|
+
+![Ligue 1](images/test_comparison_ligue_1.png)
+|shots|goals|statsbomb xG|proposed model xG|
+|---|---|---|---|
+|1301|131|120.86|122.12|
 
 
+The expected number of goals scored according to the proposed model was closer to the actual number of goals scored over a sample of 1000+ shots than the Statsbomb expected number of goals in for Serie A and Ligue 1, but was further in the Premier League, La Liga and the Bundesliga. Because the expectation of the proposed model did not differ significantly from the actual number of goals scored and the expectation of the benchmark, I find the proposed model to be reasonable.
 
 # Discussion
 The main takeaway from the project is that of the basic features of a shot, distance is by far the greatest indicator of goal expectation. This means that teams should prioritize patterns of play that enable them to take shots as close to goal as possible.
