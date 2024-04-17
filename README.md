@@ -5,19 +5,19 @@ Data Science Capstone project exploring the xG metric in football.
 Senyo Ohene
 
 # Abstract
-This project proposes a machine-learning-based method of determining the expected goals metric, which is the expectation from 0 to 1 that a goal will be scored from a particular shot. I examine full seasons from five different country football leagues and train five basic models to output probabilities that a shot will score based on its characteristics. I find that a reasonable model can be built based on the distance, angle, shot type and other features of a shot. Furthermore, I find that distance of a shot is the most important feature in determining the expectation of a goal.
+This project proposes a machine-learning-based method of determining the expected goals metric, which is the expectation from 0 to 1 that a goal will be scored from a particular shot. I examine full seasons from five different country football leagues and train five basic machine learning models to output probabilities that a shot will score based on its characteristics. I find that a model of performance comparable to industry benchmarks can be built based on the distance, angle, shot type and other features of a shot. Furthermore, I find that distance of a shot is the most important feature in determining the expectation of a goal.
 
 # Introduction
-Football is a game of goals, in which individual moments matter disproportionately as compared with other sports. At the most recent FIFA World Cup in 2022, there were 172 goals scored in 64 matches, giving an average of 2.69 goals per match. Since goals occur so infrequently, an individual goal is worth very much, and there is incentive for football teams and players to invest in creating chances that maximize their goal scoring expectations.
+Football is a game of goals, in which individual moments matter disproportionately as compared with other sports. At the most recent FIFA World Cup in 2022, there were 172 goals scored in 64 matches, giving an average of 2.69 goals per match. Since goals occur so infrequently, an individual goal is worth more than in other sports, and there is incentive for football teams and players to invest in creating chances that maximize their goal scoring expectations.
 
-Hewitt et al. use machine learning to build an expected goals model that adjusts for players and player positions in [1]. Rathke proposes a simple method based on simple ratios of goals scored to shots taken for different sections of the football field in [2]. Brechot et al. propose that examining teams' performance using expected goals is better than using the number of points they have at a particular point in the season in [3]. Lastly, Spearman use spatiotemporal data to quantify the probability of a player scoring at any point during a match [4].
-Fans of football who have watched the sport for any period of time have some idea of how likely it is that a shot will result in a goal intuitively, but it is a more involving process to quantify the quality of a shot, or the expectation that such a shot will result in a goal.
-Current industry leaders in the sport analytics world have expected goals models that vary slightly from each other in value, which suggests that, perhaps obviously, they use different algorithms to generate their expectations.
-The goal of this project is to use machine learning to develop a simple model that gives the expectation that a goal will be scored from a shot, and get an idea of which factors contribute the most to high quality chances.
+Hewitt et al. use machine learning to build an expected goals model that adjusts for players and player positions in [1]. Rathke proposes a simple method based on simple ratios of goals scored to shots taken for different sections of the football field in [2]. Brechot et al. propose that examining teams' performance using expected goals is better than using the number of points they have at a particular point in the season in [3]. Lastly, Spearman uses spatiotemporal data to quantify the probability of a player scoring at any point during a match in [4].
+Fans of football who have watched the sport for any period of time intuitively have some idea of how likely it is that a shot will result in a goal; for example, it reasonable to have a higher expectation that a goal will result from a shot from 2 meters away from an empty goal than from a shot taken from the center circle of the field toward a goal where the keeper is waiting in the middle of the goal. However, quantifying this expectation, or the expectation that such a shot will result in a goal, requires a more comprehensive and more involving process.
+Current industry leaders in the sport analytics world have expected goals models that vary slightly from each other in value, which implies that they use different algorithms to generate their expectations.
+The goal of this project, then, is to use machine learning to develop a simple model that gives the expectation that a goal will be scored from a shot, whose usefulness is comparable to industry benchmarks, and also get an idea of which factors contribute the most to high quality chances.
 
 # Methods
 ## Data
-This project uses data from the 2015/16 seasons of the Premier League, La Liga, Bundesliga, Ligue 1 and Serie A soccer leagues obtained from Statsbomb (https://github.com/statsbomb). For each league, all shots taken in the first 75% of matchweeks of the league were added to a dataframe with the following attributes
+This project uses data from the 2015/16 seasons of the Premier League, La Liga, Bundesliga, Ligue 1 and Serie A soccer leagues obtained from Statsbomb (https://github.com/statsbomb) [5]. For each league, all shots taken in the first 75% of matchweeks of the league were added to a dataframe with the following attributes
 - location (where the shot was taken)
 - shot type (whether the shot was from open play, or a penalty, corner kick or free kick)
 - shot technique (whether the shot was kicked facing the goal, over the head, with the back of the heel, lobbed over the keeper, etc.)
@@ -53,9 +53,40 @@ I plot all the shots displaying their statsbomb xg and their proposed model xg f
 ## Model selection
 The shots were used to train five classifiers, and the results were displayed to show their correlation with the Statsbomb xG. The model selection was based on the following characteristics:
 
-The desired model has a few characteristics:
 - Range of values: it has a wide enough range of values to be realistic. The sample size of shots means that there should be a reasonable spread of goal expectation values.
-- it should have a relatively high correlation with the industry benchmark. While the hope is to compare performance with the benchmark, and possibly improve it, it is unlikely that our proposed model's performance will be a vast improvement on the benchmark. I measured correlation using $R^2$ and the trendline of the graph.
+- Correlation with the industry benchmark. While the hope is to compare performance with the benchmark, and possibly improve it, it is unlikely that our proposed model's performance will be a vast improvement on the benchmark. I measured correlation using $R^2$ and also took into account the gradient of the trendline of the graph.
+
+The $R^2$ values and gradients for each model in each league are displayed below:
+
+Premier League:
+|Metric|Logistic Regression |SGDClassifier| Random Forest Classifier | Gradient Boosting Classifier| Decision Tree Classifier | 
+|---|---|---|---|---|---|
+|$R^2|0.304|0.334|0.530|0.579|0.170|
+|Gradient|0.98|0.74|0.69|0.89|0.18|
+
+La Liga
+|Metric|Logistic Regression |SGDClassifier| Random Forest Classifier | Gradient Boosting Classifier| Decision Tree Classifier | 
+|---|---|---|---|---|---|
+|$R^2|0.310|-0.181|0.537|0.654|0.187|
+|Gradient|1.03|1.115|0.72|0.91|0.21|
+
+Serie A
+|Metric|Logistic Regression |SGDClassifier| Random Forest Classifier | Gradient Boosting Classifier| Decision Tree Classifier | 
+|---|---|---|---|---|---|
+|$R^2|0.356|0.434|0.588|0.680|0.203|
+|Gradient|1.04|0.72|0.74|0.89|0.23|
+
+Bundesliga
+|Metric|Logistic Regression |SGDClassifier| Random Forest Classifier | Gradient Boosting Classifier| Decision Tree Classifier | 
+|---|---|---|---|---|---|
+|$R^2|0.385|0.345|0.542|0.617|0.162|
+|Gradient|0.97|0.87|0.74|0.83|0.21|
+
+Ligue 1
+|Metric|Logistic Regression |SGDClassifier| Random Forest Classifier | Gradient Boosting Classifier| Decision Tree Classifier | 
+|---|---|---|---|---|---|
+|$R^2|0.196|0.481|0.453|0.485|0.093|
+|Gradient|1.10|0.79|0.69|0.92|0.14|
 
 It is important to note that this project strikes a curious chord between classification and regression. It would not be appropriate to see this as a purely regressional task, because then we would only be measuring our proposed model's ability to mimic the results of Statsbomb's xG model. That said, we do note that Statsbomb's xG model is a good benchmark.
 At the same time, this is not a purely classificational task either: we do not aim to predict whether a particular shot results in a goal or not.
@@ -63,19 +94,22 @@ Instead, we are interested in the probabilities.
 
 Based on these characteristics, the Gradient Boosting classifier was chosen, for all 5 leagues. In all cases, the Gradient Boosting Classifier had the highest $R^2$ value with the statsbomb xG value, as well as the closest gradient to 1.
 
+The project also includes a function to display the cumulative xG chart of any match. This is done using code heavily adapted from McKay Johns [6].
+
+An example of this chart is shown below:
+
 # Evaluation
-## Performance of best model on test set
-I tested my model on the test set and obtained the following results:
 
 ## Permutation Feature Importance
-
 The permutation feature importance of a feature in a model is a measure of how different the output of the model is if the feature in question is randomly permuted and all other features remain the same. If outputs remain relatively unchanged despite permutation, then the feature is not particularly crucial in determining the output of the model. On the other hand, if the outputs differ significantly when a feature is permuted, then the feature is very important in determining the output.
 This seeks to determine which of the features are most important when it comes to assessing the probability of a goal being scored.
 Here are the graphs I obtained for all five leagues:
 
 Perhaps, unsurprisingly the distance is the most important, across the board. This means that shots taken closer to the goal are more likely to score than those taken from further away.
-In all cases, the second most important feature was the shot type, although in all cases, this feature
+In all cases, the second most important feature was the shot type, although in all cases, this feature's importance was significantly lower than the importance of distance.
 
+## Performance of best model on test set
+I tested my model on the test set and obtained the following results:
 
 # Discussion
 The main takeaway from the project is that of the basic features of a shot, distance is by far the greatest indicator of goal expectation. This means that teams should prioritize patterns of play that enable them to take shots as close to goal as possible.
@@ -86,7 +120,7 @@ Another useful component of analysis has to do with league performance of teams.
 
 Hyperparameter tuning can also be used to make improvements to the models instead of relying on default parameters.
 
-Another question that can be posed is: over the course of a season, is it better to have fewer high quality shots, or more low quality ones?
+Another question that can be posed is: over the course of a season, is it better to have fewer high quality shots, or more low quality ones? An exploration of this problem may be approached by grouping shots into different ranges of expected goals value, and analysing the rate at which goals are scored.
 
 In addition, there is the question of xG overperformance. Some players and teams are known for being able to score chances which when analysed with a model, have a low expectation of scoring. How can the performance of these players and teams be incorporated into the model? How sustainable is it to play football that relies on scoring low-probability chances?
 
@@ -97,13 +131,18 @@ Senyo Ohene is the author of the project. He conducted all the data collection, 
 A fairly functional expected goals model can be developed using some of the basic characteristics of any shot, although the performance and usefulness of the model increases the number of attributes it is trained on. The default Gradient Boosting Regressor provides a good model for expected goals, and teams can use it to inform training methods by making use of the feature importance of the characteristics of the shot. Across the board, the model identifies distance as the highest indicator of the quality of a shot, followed by other characteristics.
 
 # References
-CITE CODE!!!
-[1] J. H. Hewitt and O. Karakuş, "A machine learning approach for player and position adjusted expected goals in football (soccer)," __Franklin Open__, 4, 100034, August 2023.
-[2] A. Rathke, "An examination of expected goals and shot efficiency in soccer," __Journal of Human Sport and Exercise__, 12(2proc), S514-S529. doi:https://doi.org/10.14198/jhse.2017.12.Proc2.05 , 2017.
-[3] M. Brechot and R. Flepp, "Dealing With Randomness in Match Outcomes: How to Rethink Performance Evaluation in European Club Football Using Expected Goals," __Journal of Sports Economics__ 2020, Vol. 21(4) pp. 335-362, 2020.
-[4] W. Spearman, "Beyond expected goals," in __12th MIT sloan sports analytics conference__, pp. 1-17, Feb 2018.
-McKay Johns
-Professor Lee Jeongkyu
-TA Ting Tang 
-CITE PAPERS!!!
+
+[1] J. H. Hewitt and O. Karakuş, "A machine learning approach for player and position adjusted expected goals in football (soccer)," _Franklin Open_, 4, 100034, August 2023.
+
+[2] A. Rathke, "An examination of expected goals and shot efficiency in soccer," _Journal of Human Sport and Exercise_, 12(2proc), S514-S529. doi:https://doi.org/10.14198/jhse.2017.12.Proc2.05 , 2017.
+
+[3] M. Brechot and R. Flepp, "Dealing With Randomness in Match Outcomes: How to Rethink Performance Evaluation in European Club Football Using Expected Goals," _Journal of Sports Economics_ 2020, Vol. 21(4) pp. 335-362, 2020.
+
+[4] W. Spearman, "Beyond expected goals," in _12th MIT sloan sports analytics conference_, pp. 1-17, Feb 2018.
+
+[5] Statsbomb. (2024). _Statsbombpy_ [Online]. Available: https://github.com/statsbomb
+
+[6] M. Johns. (2022). _xG flow tutorial_ [Online]. Available: https://github.com/mckayjohns/youtube-videos/blob/main/code/xG%20flow%20tutorial.ipynb
+
+
 # Appendix
