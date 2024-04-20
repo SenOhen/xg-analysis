@@ -183,4 +183,5 @@ A fairly functional expected goals model can be developed using some of the basi
 [6] M. Johns. (2022). _xG flow tutorial_ [Online]. Available: https://github.com/mckayjohns/youtube-videos/blob/main/code/xG%20flow%20tutorial.ipynb
 
 
-# Appendix
+# Acknowledgements
+I would like to thank Professor Lee Jeongkyu and T.A. Ting Tang for all their support over the course of this project.
